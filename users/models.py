@@ -17,6 +17,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
     def create_superuser(self, **kwargs):
         user = self.create_user(**kwargs)
         user.is_superuser = True
@@ -42,15 +43,19 @@ class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+
     class Meta:
         abstract = True
         ordering = ['email']
 
+
     def get_full_name(self):
         return self.email
 
+
     def get_short_name(self):
         return self.email
+
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Sends an email to this User."""
@@ -59,7 +64,6 @@ class AbstractEmailUser(AbstractBaseUser, PermissionsMixin):
 
 
 class User(AbstractEmailUser):
-
     USER_TYPE_CHOICES = (
         ('seller', 'Seller'),
         ('customer', 'Customer')
@@ -71,20 +75,33 @@ class User(AbstractEmailUser):
     full_name = models.CharField(
         'Full name', max_length=255, blank=True
     )
+    bank_account = models.CharField(max_length=14, blank=True, null=True)
     activation_code = models.CharField(max_length=36,blank=True)
+
 
     def get_full_name(self):
         return self.full_name
 
+
     def get_short_name(self):
         return self.full_name
+
+
+    def create_activation_code(self):
+        self.activation_code = str(uuid.uuid4())
+
+
+    @property
+    def is_seller(self):
+        return self.user_type == 'seller'
+
+    @property
+    def is_customer(self):
+        return self.user_type == 'customer'
+
 
     def __str__(self):
         return '{name} < {email}'.format(
             name=self.full_name,
             email=self.email
         )
-
-
-    def create_activation_code(self):
-        self.activation_code = str(uuid.uuid4())
