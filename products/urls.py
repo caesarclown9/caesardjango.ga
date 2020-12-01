@@ -8,5 +8,5 @@ urlpatterns = [
     path('', ProductListAPIView.as_view()),
     path('create/', ProductCreateAPIView.as_view()),
     path('<int:pk>/', ProductDetailAPIView.as_view()),
-    path('my-products', AuthorsProductListAPIView.as_view()), #need help
+    path('my-products', AuthorsProductListAPIView.as_view())
 ]

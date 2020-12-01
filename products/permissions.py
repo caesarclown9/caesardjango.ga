@@ -4,7 +4,6 @@ from rest_framework.permissions import (
 
 class IsSeller(BasePermission):
     def has_permission(self, request, view):
-        print(dir(request.user))
         return request.user and request.user.is_seller
 
     def has_object_permission(self, request, view, obj):

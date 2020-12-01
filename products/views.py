@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from . import models
 from . import permissions
 from . import serializers
+from order.permissions import IsAuthor
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
@@ -31,7 +32,7 @@ class ProductListAPIView(generics.ListAPIView):
 class AuthorsProductListAPIView(generics.ListAPIView):
     queryset = models.Product.objects.all()
     serializers_class = serializers.ProductSerializer
-    permission_classes = (IsAuthenticated, permissions.IsSeller, )
+    permission_classes = (IsAuthor, )
 
     def get_queryset(self):
         return models.Product.objects.filter(author=self.request.user)
