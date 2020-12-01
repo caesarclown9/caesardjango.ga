@@ -2,7 +2,6 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Profile
 
 
 User = get_user_model()
@@ -55,12 +54,10 @@ class LoginSerializer(TokenObtainPairSerializer):
         email = attrs.get('email')
         user_type = attrs.get('user_type')
         password = attrs.pop('password', None)
+        print(User.objects.get(pk=2))
 
         if not User.objects.filter(email=email, user_type=user_type).exists():
             raise serializers.ValidationError("User not found!")
-
-        if not User.objects.filter(password=password):
-            raise serializers.ValidationError("Your password is incorrect!")
 
         user = authenticate(username=email, password=password)
         if user and user.is_active:
@@ -72,14 +69,25 @@ class LoginSerializer(TokenObtainPairSerializer):
             return attrs
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ('first_name', 'last_name', 'gender', 'address',)
+# class UserProfileSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Profile
+#         fields = ('id', 'email', 'first_name', 'password' )
+
+#     def restore_object(self, attrs, instance=None):
+#         if instance is not None:
+#             instance.user.email = attrs.get('user.email', instance.user.email)
+#             instance.user.password = attrs.get('user.password', instance.user.password)
+#             return instance
+
+#         user = User.objects.create_user(
+#             email=attrs.get('user.email'),
+#             password=attrs.get('user.password')
+#         )
+#         return Profile(user=user)
 
 
-class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(required=True)
-    class Meta:
-        model = User
-        fields = ('url', 'email', 'profile', 'created',)
+class ChangePasswordSerializer(serializers.Serializer):
+    model = User
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)

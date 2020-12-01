@@ -18,7 +18,7 @@ def send_confirmation_email(user):
     mail.send_mail(
         subject,
         plain_message,
-        "alymbekovdastan1@gmail.com",
+        "caesarclown9@gmail.com",
         [to_emails, ],
         html_message=msg_html
     )

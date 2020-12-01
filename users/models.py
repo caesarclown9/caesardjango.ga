@@ -3,9 +3,12 @@ import uuid
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
+from django.dispatch import receiver
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from django_rest_passwordreset.signals import reset_password_token_created
 
 
 class UserManager(BaseUserManager):
@@ -108,33 +111,52 @@ class User(AbstractEmailUser):
         )
 
 
-class Profile(models.Model):
-    GENDER = (
-        ('M', 'Male'),
-        ('F', 'Female'),
+# class Profile(models.Model):
+#     GENDER = (
+#         ('M', 'Male'),
+#         ('F', 'Female'),
+#     )
+
+#     user = models.OneToOneField(User, on_delete=models.CASCADE)
+#     first_name = models.CharField(max_length=120, blank=False)
+#     last_name = models.CharField(max_length=120, blank=False)
+#     gender = models.CharField(max_length=1, choices=GENDER)
+#     address = models.CharField(max_length=255, blank=False)
+
+#     def __unicode__(self):
+#         return u'Profile of user: {0}'.format(self.user.email)
+
+
+# def create_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
+#         post_save.connect(create_profile, sender=User)
+
+
+# def delete_user(sender, instance=None, **kwargs):
+#     try:
+#         instance.user
+#     except User.DoesNotExist:
+#         pass
+#     else:
+#         instance.user.delete()
+#         post_delete.connect(delete_user, sender=Profile)
+
+
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    email_plaintext_message = "{}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+
+    send_mail(
+        # title:
+        "Password Reset for {title}".format(title="Some website title"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "noreply@somehost.local",
+        # to:
+        [reset_password_token.user.email]
     )
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=120, blank=False)
-    last_name = models.CharField(max_length=120, blank=False)
-    gender = models.CharField(max_length=1, choices=GENDER)
-    address = models.CharField(max_length=255, blank=False)
-
-    def __unicode__(self):
-        return u'Profile of user: {0}'.format(self.user.email)
-
-
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-        post_save.connect(create_profile, sender=User)
-
-
-def delete_user(sender, instance=None, **kwargs):
-    try:
-        instance.user
-    except User.DoesNotExist:
-        pass
-    else:
-        instance.user.delete()
-        post_delete.connect(delete_user, sender=Profile)

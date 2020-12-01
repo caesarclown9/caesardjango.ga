@@ -42,6 +42,8 @@ class Product(models.Model):
     body = models.TextField()
     image = models.ImageField(blank=True, null=True)
     price = models.DecimalField(max_digits=10,  decimal_places=2)
+    is_available = models.BooleanField(default=False)
+    quantity = models.IntegerField(default=0)
     category = models.ForeignKey(Category, related_name='categories', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
