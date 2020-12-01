@@ -50,10 +50,3 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
-
-class Balance(models.Model):
-    owner = models.OneToOneField(User, on_delete=models.CASCADE)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-    def __str__(self):
-        return f"{self.balance} $"

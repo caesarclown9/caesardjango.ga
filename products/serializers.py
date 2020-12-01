@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Product, Category, Balance
+
+from .models import Product, Category
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -19,8 +20,3 @@ class CategoryAPISerializer(serializers.ModelSerializer):
             'id', 'title', 'products'
         ]
 
-
-class BalanceAPISerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Balance
-        fields = ['balance']

@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from .models import Profile
+
 
 User = get_user_model()
 
@@ -46,7 +48,7 @@ class LoginSerializer(TokenObtainPairSerializer):
 
     def validate_email(self, value):
         if not User.objects.filter(email=value).exists():
-            raise ValidationError('User with given email is not found!')
+            raise serializers.ValidationError('User with given email is not found!')
         return value
 
     def validate(self, attrs):
@@ -55,7 +57,10 @@ class LoginSerializer(TokenObtainPairSerializer):
         password = attrs.pop('password', None)
 
         if not User.objects.filter(email=email, user_type=user_type).exists():
-            raise ValidationError("User not found!")
+            raise serializers.ValidationError("User not found!")
+
+        if not User.objects.filter(password=password):
+            raise serializers.ValidationError("Your password is incorrect!")
 
         user = authenticate(username=email, password=password)
         if user and user.is_active:
@@ -65,3 +70,16 @@ class LoginSerializer(TokenObtainPairSerializer):
             attrs['access'] = str(refresh.access_token)
 
             return attrs
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('first_name', 'last_name', 'gender', 'address',)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(required=True)
+    class Meta:
+        model = User
+        fields = ('url', 'email', 'profile', 'created',)

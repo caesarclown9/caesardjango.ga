@@ -76,6 +76,7 @@ class User(AbstractEmailUser):
         'Full name', max_length=255, blank=True
     )
     bank_account = models.CharField(max_length=14, blank=True, null=True)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     activation_code = models.CharField(max_length=36,blank=True)
 
 
@@ -105,3 +106,35 @@ class User(AbstractEmailUser):
             name=self.full_name,
             email=self.email
         )
+
+
+class Profile(models.Model):
+    GENDER = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=120, blank=False)
+    last_name = models.CharField(max_length=120, blank=False)
+    gender = models.CharField(max_length=1, choices=GENDER)
+    address = models.CharField(max_length=255, blank=False)
+
+    def __unicode__(self):
+        return u'Profile of user: {0}'.format(self.user.email)
+
+
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+        post_save.connect(create_profile, sender=User)
+
+
+def delete_user(sender, instance=None, **kwargs):
+    try:
+        instance.user
+    except User.DoesNotExist:
+        pass
+    else:
+        instance.user.delete()
+        post_delete.connect(delete_user, sender=Profile)

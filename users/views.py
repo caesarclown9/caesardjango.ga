@@ -2,12 +2,13 @@ from decouple import config
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.views import View
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import RegisterAPISerializer, LoginSerializer
+from .serializers import RegisterAPISerializer, LoginSerializer, UserSerializer
 from .send_mail import send_confirmation_email
 
 User = get_user_model()
@@ -37,3 +38,19 @@ class ActivationView(View):
 
 class LoginAPIView(TokenObtainPairView):
     serializer_class = LoginSerializer
+
+
+class UserList(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return User.objects.all()
+        else:
+            return self.request.user
+
+    def post(self, request, format=None):
+        serializer = ProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response("placeholder", status=status.HTTP_201_CREATED)

@@ -7,11 +7,6 @@ from . import permissions
 from . import serializers
 
 
-class BalanceAPIView(generics.ListAPIView):
-    queryset = models.Balance.objects.all()
-    serializer_class = serializers.BalanceAPISerializer
-
-
 class ProductCreateAPIView(generics.CreateAPIView):
     permission_classes = (permissions.IsSeller,)
     queryset = models.Product.objects.all()
