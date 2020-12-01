@@ -42,9 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_rest_passwordreset',
+    'django_tables2',
     'products',
     'users',
+    'order',
 ]
+
+CURRENCY = '$'
+
 
 AUTH_USER_MODEL = 'users.User'
 
