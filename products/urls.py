@@ -9,6 +9,7 @@ urlpatterns = [
     path('create/', ProductCreateAPIView.as_view()),
     path('<int:pk>/', ProductDetailAPIView.as_view()),
     path('my-products/', AuthorsProductListAPIView.as_view()),
+    path('search/', SearchListView.as_view()),
     path('wishlist/', WishListApiView.as_view()),
     path('<int:pk>/wish/add/', WishAdd.as_view()),
     path('<int:pk>/wish/delete/', WishDelete.as_view()),

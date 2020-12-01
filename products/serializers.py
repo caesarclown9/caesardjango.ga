@@ -6,9 +6,10 @@ from .models import Product, Category, Wish, Bucketlist, BucketlistItem
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        exclude = [
-            'author', 'created_at', 'updated_at'
+        fields = [
+            'id','title', 'body', 'value', 'qty', 'category', 'image'
         ]
+
 
 
 class CategoryAPISerializer(serializers.ModelSerializer):
