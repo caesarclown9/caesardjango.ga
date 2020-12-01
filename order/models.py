@@ -5,11 +5,11 @@ from users.models import User
 
 
 class Order(models.Model):
-    product = models.ManyToManyField(Product)
-    first_name = models.CharField(max_length=50, blank=True, null=True)
-    last_name = models.CharField(max_length=50, blank=True, null=True)
-    address = models.CharField(max_length=250, blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
+    product = models.ManyToManyField(Product, related_name='products')
+    first_name = models.CharField(max_length=50, )
+    last_name = models.CharField(max_length=50, )
+    address = models.CharField(max_length=250, )
+    city = models.CharField(max_length=100, )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -20,7 +20,7 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
 
     def __str__(self):
-        return 'Order {}'.format(self.email)
+        return 'Order {}'.format(self.id)
 
     def get_total_cost(self):
         return sum(item.get_cost() for item in self.items.all())
