@@ -7,6 +7,11 @@ from . import permissions
 from . import serializers
 
 
+class OrderItemCreateAPIView(generics.CreateAPIView):
+    queryset = models.OrderItem.objects.all()
+    serializer_class = serializers.OrderItemCreateSerializer
+
+
 class OrderCreateAPIView(generics.CreateAPIView):
     queryset = models.Order.objects.all()
     serializer_class = serializers.OrderSerializer
